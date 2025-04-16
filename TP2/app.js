@@ -3,12 +3,26 @@ const redis = require('redis');
 const path = require('path');
 
 const app = express();
-const client = redis.createClient();
+
+// ✅ Conexión a Redis dentro de Docker
+const client = redis.createClient({
+  socket: {
+    host: 'redis', // nombre del servicio en docker-compose.yml
+    port: 6379
+  }
+});
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-client.connect();
+(async () => {
+  try {
+    await client.connect();
+    console.log('🔌 Conectado a Redis correctamente');
+  } catch (error) {
+    console.error('❌ Error al conectar con Redis:', error);
+  }
+})();
 
 // Ruta principal para servir index.html
 app.get('/', (req, res) => {

@@ -6,11 +6,18 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #eeb843;
+      background-color: #cdfa50;
       color: #000000;
     }
+    h4 {
+      color: #5e5e5e;
+      margin-top: 30px;
+      border-bottom: 2px solid #5e5e5e;
+      padding-bottom: 10px;
+    }
     h3 {
-      border-bottom: 2px solid #000000;
+      color: #5e5e5e;
+      border-bottom: 2px solid #5e5e5e;
       padding-bottom: 5px;
     }
     .card {
@@ -19,72 +26,22 @@
     .card:hover {
       transform: scale(1.03);
     }
+    .footer {
+      background-color: #ffffff;
+      margin-top: 50px;
+      border-bottom: 2px solid #ffffff;
+    } 
   </style>
   
 </head>
 <body>
 
 <div class="container mt-3">
-  <h1 class="text-center">Alquiler The Mandalorian</h1>
+  <h1 class="text-center">The Mandalorian</h1>
+  <h4 class="text-center">Alquila tu capitulo</h4>
   <div id="capitulos" class="mt-2"></div>
 </div>
 
-<!-- 
-<script>
-fetch('/listar')
-  .then(res => res.json())
-  .then(data => {
-    const contenedor = document.getElementById('capitulos');
-    for (const temporada in data) {
-      const t = document.createElement('div');
-      t.innerHTML = `<h3 class="container mt-3">Temporada ${temporada}</h3>`;
-      data[temporada].forEach((cap, index) => {
-        let btn = '';
-        if (cap.estado === "disponible") {
-          btn = `<button class="btn btn-success btn-sm" onclick="alquilar('${temporada}', ${index+1})">Alquilar</button>`;
-        } else if (cap.estado === "reservado") {
-          btn = `
-            <span class="badge bg-warning text-dark me-2">Reservado</span>
-            <button class="btn btn-primary btn-sm" onclick="confirmar('${temporada}', ${index+1})">Pagar</button>
-          `;
-        } else {
-          btn = `<span class="badge bg-danger">No Disponible</span>`;
-        }
-
-        t.innerHTML += `
-          <div class="d-flex justify-content-between align-items-center bg-secondary p-2 my-1 rounded">
-            <span>${cap.nombre}</span>
-            <div>${btn}</div>
-          </div>
-        `;
-      });
-      contenedor.appendChild(t);
-    }
-  });
-
-function alquilar(temp, cap) {
-  fetch('/alquilar', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ temporada: temp, capitulo: cap })
-  })
-  .then(res => res.json())
-  .then(msg => alert(msg.mensaje || msg.error))
-  .then(() => location.reload());
-}
-
-function confirmar(temp, cap) {
-  fetch('/confirmar', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ temporada: temp, capitulo: cap })
-  })
-  .then(res => res.json())
-  .then(msg => alert(msg.mensaje || msg.error))
-  .then(() => location.reload());
-}
-</script>
--->
 <script>
     fetch('/listar')
       .then(res => res.json())
@@ -153,4 +110,7 @@ function confirmar(temp, cap) {
     </script>
     
 </body>
+<footer class="footer">
+  <h6 class="text-center"> BD-NSQL Fernanda Cafferata </h6>
+</footer>
 </html>
