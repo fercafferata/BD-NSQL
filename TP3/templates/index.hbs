@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Principal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+</head>
+<body>
+  <header>
+    <ul class="nav nav-pills nav-fill">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/cargar">Cargar</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/location5km">Locales</a>
+      </li>
+    </ul>
+  </header>
+
+  <main class="container mt-4">
+    <h2 class="mb-4">Puntos útiles de la ciudad</h2>
+    
+    <div id="map" style="height: 500px;"></div>
+    
+    <script>
+      // Almacenar los datos de puntos pasados desde el servidor
+      const puntos = {{{json puntos}}};
+    </script>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar el mapa
+      const map = L.map('map').setView([-32.4798, -58.2353], 13);
+      
+      // Añadir capa de mapa base
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      
+      // Colores para diferentes categorías
+      const colores = {
+        cervecerias: '#FF5733',
+        universidades: '#33A8FF',
+        farmacias: '#33FF57',
+        emergencias: '#FF3333',
+        supermercados: '#FFDD33'
+      };
+      
+      // Añadir marcadores para cada punto
+      Object.entries(puntos).forEach(([categoria, lugares]) => {
+        lugares.forEach(lugar => {
+          const marker = L.marker([lugar.latitud, lugar.longitud]).addTo(map);
+          marker.bindPopup(`<strong>${lugar.nombre}</strong><br>Categoría: ${categoria}`);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
