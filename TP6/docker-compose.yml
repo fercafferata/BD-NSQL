@@ -1,0 +1,98 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: tp6-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - tp6-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  redis-geo:
+    image: redis:6-alpine
+    container_name: tp6-redis-geo
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_geo_data:/data
+    networks:
+      - tp6-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  redis-pop:
+    image: redis:6-alpine
+    container_name: tp6-redis-pop
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_pop_data:/data
+    networks:
+      - tp6-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: tp6-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/tp6
+      - REDIS_GEO_URL=redis://redis-geo:6379
+      - REDIS_POP_URL=redis://redis-pop:6379
+      - NODE_ENV=production
+    volumes:
+      - ./data_trasport-y5BJ8URQizYcNY6LbZ0sFVgpWThJf1.json:/app/data_trasport-y5BJ8URQizYcNY6LbZ0sFVgpWThJf1.json:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis-geo:
+        condition: service_healthy
+      redis-pop:
+        condition: service_healthy
+    networks:
+      - tp6-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: tp6-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - tp6-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+  redis_geo_data:
+  redis_pop_data:
+
+networks:
+  tp6-network:
+    driver: bridge
